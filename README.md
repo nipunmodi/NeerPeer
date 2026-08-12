@@ -77,49 +77,6 @@ The frontend communicates with the backend through RESTful API endpoints organiz
 
 ---
 
-# 🏗️ System Architecture
-
-NeerPeer uses a **client-server architecture** with a React frontend, Node.js/Express backend, MongoDB database, and external authentication/media services.
-
-```mermaid
-flowchart TB
-    U[👨‍🎓 Student / User]
-
-    FE["🖥️ React Frontend<br/>Tailwind CSS"]
-
-    AUTH["🔐 Firebase Authentication"]
-
-    API["🌐 Express.js REST API<br/>Node.js Backend"]
-
-    MW["🧩 Middleware<br/>Auth • CORS • Cookies"]
-
-    CTRL["🎯 Controllers<br/>Business Logic"]
-
-    ROUTES["🛣️ Routes<br/>User • Task • Post • Roommate"]
-
-    MODELS["📦 Mongoose Models<br/>User • Task • Post • Roommate"]
-
-    DB[("🍃 MongoDB")]
-
-    CLOUD["☁️ Cloudinary<br/>Media Storage"]
-
-    U --> FE
-
-    FE -->|Authentication| AUTH
-    FE -->|HTTP / REST API| API
-
-    API --> MW
-    MW --> ROUTES
-    ROUTES --> CTRL
-    CTRL --> MODELS
-    MODELS --> DB
-
-    CTRL -->|Media Upload| CLOUD
-    AUTH -.->|Identity / Credentials| API
-
-    DB -.-> MODELS
-```
-
 ### Architecture Flow
 
 A typical request travels through the application as follows:
@@ -138,44 +95,6 @@ This separation keeps presentation, API routing, business logic, and persistence
 
 ---
 
-# 🔄 Request Lifecycle
-
-```mermaid
-sequenceDiagram
-    participant User
-    participant React as React Frontend
-    participant Firebase as Firebase Auth
-    participant API as Express API
-    participant Middleware as Middleware
-    participant Controller as Controller
-    participant Model as Mongoose Model
-    participant DB as MongoDB
-    participant Cloudinary as Cloudinary
-
-    User->>React: Perform an action
-    React->>Firebase: Authenticate / verify identity
-    Firebase-->>React: Authentication result
-
-    React->>API: REST API request
-    API->>Middleware: Validate request/auth
-    Middleware->>Controller: Forward authorized request
-
-    Controller->>Model: Read / write application data
-    Model->>DB: Execute database operation
-    DB-->>Model: Return data
-    Model-->>Controller: Return result
-
-    alt Media operation
-        Controller->>Cloudinary: Upload / manage media
-        Cloudinary-->>Controller: Media URL / result
-    end
-
-    Controller-->>API: Response
-    API-->>React: JSON response
-    React-->>User: Update UI
-```
-
----
 
 # 🧱 Backend Architecture
 
@@ -310,28 +229,6 @@ MongoDB
 This domain-oriented model organization allows each feature to evolve independently.
 
 ---
-
-# 🔐 Authentication Architecture
-
-Authentication is handled using **Firebase Authentication**, while the backend includes **Firebase Admin** support for server-side authentication workflows.
-
-```mermaid
-flowchart LR
-    User[User]
-    UI[React Frontend]
-    Firebase[Firebase Authentication]
-    API[Express Backend]
-    Middleware[Auth Middleware]
-    Resource[Protected Resource]
-
-    User --> UI
-    UI --> Firebase
-    Firebase --> UI
-    UI --> API
-    API --> Middleware
-    Middleware --> Resource
-```
-
 ### Why Firebase?
 
 Firebase provides a managed authentication layer while keeping authentication concerns separate from application business logic.
@@ -340,33 +237,6 @@ The backend can then focus on authorization and application-specific operations.
 
 ---
 
-# ☁️ Media Upload Architecture
-
-Cloudinary is used for media storage.
-
-```mermaid
-flowchart LR
-    User[User]
-    UI[React Frontend]
-    API[Express Backend]
-    Controller[Controller]
-    Cloudinary[Cloudinary]
-    DB[(MongoDB)]
-
-    User --> UI
-    UI -->|Upload media| API
-    API --> Controller
-    Controller -->|Upload| Cloudinary
-    Cloudinary -->|Media URL| Controller
-    Controller -->|Store metadata / URL| DB
-    DB --> Controller
-    Controller --> API
-    API --> UI
-```
-
-The application therefore avoids storing uploaded media directly inside MongoDB and instead stores references to externally hosted media.
-
----
 
 # 🧩 Core Modules
 
